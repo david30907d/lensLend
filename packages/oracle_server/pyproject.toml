@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "oracle-server"
+version = "0.1.0"
+description = ""
+authors = ["akirawuc <stu970029@gmail.com>"]
+readme = "README.md"
+packages = [{include = "oracle_server"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+uvicorn = "^0.22.0"
+web3 = "^6.3.0"
+fastapi = "^0.95.1"
+requests = "^2.30.0"
+pycoingecko = "^3.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
