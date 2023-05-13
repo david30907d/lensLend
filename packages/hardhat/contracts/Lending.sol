@@ -17,7 +17,7 @@ contract Lending {
     mapping(address => Loan) public loans;
     mapping(address => uint256) public bobBalances;
     IERC20 public bobToken;
-    IZkBobDirectDeposits public bobDirectDepositContract;
+    ZkBobDirectDepositQueue public bobDirectDepositContract;
     AuthorizedMapping public oracle;
 
     event LoanCreated(
@@ -30,16 +30,16 @@ contract Lending {
     constructor(address _bobTokenAddress, address _zkBobDirectDepositAddress, address oracleAddress) {
         // bob token(in Sepolia): 0x2C74B18e2f84B78ac67428d0c7a9898515f0c46f
         bobToken = IERC20(_bobTokenAddress);
-        bobDirectDepositContract = IZkBobDirectDeposits(_zkBobDirectDepositAddress);
+        bobDirectDepositContract = ZkBobDirectDepositQueue(_zkBobDirectDepositAddress);
         oracle = AuthorizedMapping(oracleAddress);
     }
 
-    function createLoan(uint256 _amount, uint256 _interestRate) external {
+    function createLoan(uint256 _amount, uint256 _interestRate, bytes memory zkAddress) external {
         require(
             loans[msg.sender].active == false,
             "You already have an active loan"
         );
-        require(oracle.getValue(msg.sender) >= _amount, "_amount is greater than authorized amount");
+        // require(oracle.getValue(msg.sender) >= _amount, "_amount is greater than authorized amount");
         require(
             bobToken.transfer(msg.sender, _amount),
             "Loan transfer failed"
@@ -48,8 +48,10 @@ contract Lending {
         Loan memory newLoan = Loan(msg.sender, _amount, _interestRate, true);
         // option A:
         // Option A, through pool contract
+        IERC20(bobDirectDepositContract.token()).safeApprove(address(bobDirectDepositContract), _amount);
         // bobToken.approve(address(bobDirectDepositContract), _amount);
-        // uint256 depositId = bobDirectDepositContract.directDeposit(msg.sender, _amount, zkAddress);
+        bobDirectDepositContract.directDeposit(msg.sender, _amount, zkAddress);
+        // uint256 depositId = bobDirectDepositContract.directDeposit(msg.sender, 1, zkAddress);
         // option B:
         // bobToken.transferAndCall(address(bobDirectDepositContract), _amount, abi.encode(msg.sender, zkAddress));
         loans[msg.sender] = newLoan;

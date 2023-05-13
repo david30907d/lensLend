@@ -34,7 +34,7 @@ describe("Lending Protocol", function () {
   async function depositTest() {
     const [owner] = await ethers.getSigners()
     const depositAmount = ethers.utils.parseUnits("10", 18);
-    await lendingContract.connect(owner).deposit(depositAmount);
+    await lendingContract.connect(signer).deposit(depositAmount);
     const depositBalanceOfThisAddress = await lendingContract.bobBalances(owner.address);
     console.log("depositBalanceOfThisAddress", depositBalanceOfThisAddress)
     expect(depositBalanceOfThisAddress).to.equal(depositAmount);
@@ -54,7 +54,7 @@ describe("Lending Protocol", function () {
       oracleContract = await oracle.deploy();
     
       const Lending = await ethers.getContractFactory("Lending");
-      lendingContract = await Lending.deploy(mockBobContract.address, zkBobDirectDepositAddress, oracleContract.address);
+      lendingContract = await Lending.deploy(bobTokenAddress, zkBobDirectDepositAddress, oracleContract.address);
 
       // transfer bob to contract address on testnet
       realBobContract = new ethers.Contract(bobTokenAddress, bobABI, provider);
@@ -73,8 +73,9 @@ describe("Lending Protocol", function () {
         // transfer bob to contract address
         const [owner] = await ethers.getSigners();
         await mockBobContract.connect(owner).transfer(lendingContract.address, ethers.utils.parseUnits("100", 18));
+        res = await realBobContract.connect(signer).transfer(lendingContract.address, ethers.utils.parseUnits("1", 18));
         
-        await lendingContract.connect(owner).createLoan(ethers.utils.parseUnits("10", 18), 0);
+        await lendingContract.connect(owner).createLoan(ethers.utils.parseUnits("10", 1), 0, stringToBytes(myZkAddress));
         const loan = await lendingContract.loans(owner.address);
         expect(loan.amount).to.equal(ethers.utils.parseUnits("10", 18));
         expect(loan.interestRate).to.equal(0);
@@ -84,7 +85,7 @@ describe("Lending Protocol", function () {
         await mockBobContract.transfer(lendingContract.address, ethers.utils.parseUnits("100", 18));
 
         const [owner] = await ethers.getSigners()
-        await lendingContract.connect(owner).createLoan(ethers.utils.parseUnits("10", 18), 10);
+        await lendingContract.connect(owner).createLoan(ethers.utils.parseUnits("10", 18), 10, stringToBytes(myZkAddress));
         const loan = await lendingContract.loans(owner.address);
         expect(loan.amount).to.equal(ethers.utils.parseUnits("10", 18));
         expect(loan.interestRate).to.equal(10);
@@ -99,7 +100,7 @@ describe("Lending Protocol", function () {
       it("Should be able to repay your loan", async function () {
         const [owner] = await ethers.getSigners()
         const borrowAmount = ethers.utils.parseUnits("10", 18);
-        await lendingContract.connect(owner).createLoan(borrowAmount, 10);
+        await lendingContract.connect(owner).createLoan(borrowAmount, 10, stringToBytes(myZkAddress));
         await lendingContract.connect(owner).repayLoan();
         const loan = await lendingContract.loans(owner.address);
         expect(loan.active).to.equal(false);
