@@ -104,3 +104,7 @@ interface IZkBobDirectDeposits {
      */
     function refundDirectDeposit(uint256[] memory indices) external;
 }
+
+abstract contract ZkBobDirectDepositQueue is IZkBobDirectDeposits {
+    address public token;
+}
