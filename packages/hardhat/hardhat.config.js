@@ -8,6 +8,8 @@ require("@tenderly/hardhat-tenderly");
 require("@nomicfoundation/hardhat-toolbox");
 require("hardhat-deploy");
 
+const { PRIVATE_KEY } = process.env;
+
 const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 
 /*
@@ -60,6 +62,12 @@ module.exports = {
   // Follow the directions, and uncomment the network you wish to deploy to.
 
   networks: {
+    hardhat: {
+      forking: {
+        url: "https://eth-sepolia.g.alchemy.com/v2/Ejxd3o1JAwdP6X67VxVwAMW1zcVmTKn3",
+        accounts: [`0x${PRIVATE_KEY}`]
+      },
+    },
     localhost: {
       url: "http://127.0.0.1:8545/",
       /*
