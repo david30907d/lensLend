@@ -10,13 +10,15 @@ const signer = new ethers.Wallet(process.env.PRIVATE_KEY).connect(provider);
 async function deployContracts() {
   const mockBob = await ethers.getContractFactory("MockBob");
   mockBobContract = await mockBob.deploy();
+  const oracle = await ethers.getContractFactory("AuthorizedMapping");
+  oracleContract = await oracle.deploy();
 
   const Lending = await ethers.getContractFactory("Lending");
   // for local testing
   // lendingContract = await Lending.deploy(mockBobContract.address, zkBobDirectDepositAddress);
 
   // for fork environment
-  lendingContract = await Lending.deploy(bobTokenAddress, zkBobDirectDepositAddress);
+  lendingContract = await Lending.deploy(bobTokenAddress, zkBobDirectDepositAddress, oracleContract.address);
   // transfer bob to contract address on my local
   await mockBobContract.transfer(lendingContract.address, ethers.utils.parseUnits("100", 18));
 
@@ -48,9 +50,11 @@ describe("Lending Protocol", function () {
     beforeEach(async () => {
       const mockBob = await ethers.getContractFactory("MockBob");
       mockBobContract = await mockBob.deploy();
-
+      const oracle = await ethers.getContractFactory("AuthorizedMapping");
+      oracleContract = await oracle.deploy();
+    
       const Lending = await ethers.getContractFactory("Lending");
-      lendingContract = await Lending.deploy(mockBobContract.address, zkBobDirectDepositAddress);
+      lendingContract = await Lending.deploy(mockBobContract.address, zkBobDirectDepositAddress, oracleContract.address);
 
       // transfer bob to contract address on testnet
       realBobContract = new ethers.Contract(bobTokenAddress, bobABI, provider);
