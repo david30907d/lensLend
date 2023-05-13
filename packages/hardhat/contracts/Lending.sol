@@ -1,22 +1,10 @@
 pragma solidity ^0.8.0;
 import "hardhat/console.sol";
-
-interface IERC20 {
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
-
-    function transfer(
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
-
-    function balanceOf(address account) external view returns (uint256);
-}
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract Lending {
+    using SafeERC20 for IERC20;
     struct Loan {
         address borrower;
         uint256 amount;
@@ -45,9 +33,8 @@ contract Lending {
             loans[msg.sender].active == false,
             "You already have an active loan"
         );
-
         require(
-            bobToken.transferFrom(msg.sender, address(this), _amount),
+            bobToken.transfer(msg.sender, _amount),
             "Loan transfer failed"
         );
 
@@ -55,13 +42,6 @@ contract Lending {
         // // TODO(david): use direct deposit
         // direct_deposit(zk_address, _amount);
         loans[msg.sender] = newLoan;
-        // console.log("newLoan", msg.sender, newLoan);
-        console.log(
-            newLoan.borrower,
-            newLoan.amount,
-            newLoan.interestRate,
-            newLoan.active
-        );
         emit LoanCreated(msg.sender, _amount, _interestRate);
     }
 
@@ -75,11 +55,10 @@ contract Lending {
             bobToken.balanceOf(msg.sender) >= repaymentAmount,
             "Insufficient funds"
         );
-
         loan.active = false;
         emit LoanRepaid(msg.sender, repaymentAmount);
 
-        bobToken.transfer(msg.sender, repaymentAmount);
+        bobToken.transferFrom(msg.sender, address(this), repaymentAmount);
     }
 
     function deposit(uint256 amount) external {
