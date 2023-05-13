@@ -14,20 +14,15 @@ contract AuthorizedMapping {
         _;
     }
 
-    modifier onlyAuthorized() {
-        require(authorizedMap[msg.sender] > 0, "Only authorized address can call this function");
-        _;
-    }
-
-    function setValue(uint256 _value) public onlyAuthorized {
-        authorizedMap[msg.sender] = _value;
-    }
-
     function getValue(address _addr) public view returns (uint256) {
         return authorizedMap[_addr];
     }
 
     function addAuthorized(address _addr, uint256 _value) public onlyOwner {
+        authorizedMap[_addr] = _value;
+    }
+
+    function updateAuthorized(address _addr, uint256 _value) public onlyOwner {
         authorizedMap[_addr] = _value;
     }
 
