@@ -34,6 +34,7 @@ describe("Lending Protocol", function () {
     const depositAmount = ethers.utils.parseUnits("10", 18);
     await lendingContract.connect(owner).deposit(depositAmount);
     const depositBalanceOfThisAddress = await lendingContract.bobBalances(owner.address);
+    console.log("depositBalanceOfThisAddress", depositBalanceOfThisAddress)
     expect(depositBalanceOfThisAddress).to.equal(depositAmount);
   }
 
@@ -59,47 +60,47 @@ describe("Lending Protocol", function () {
       await mockBobContract.connect(owner).approve(lendingContract.address, ethers.utils.parseUnits("100000000", 18))
       await realBobContract.connect(signer).approve(lendingContract.address, ethers.utils.parseUnits("100000000", 18))
     });
+    
+    describe("createLoan()", function () {
+      beforeEach(async () => {
+        await depositTest()
+      });
+      it("Should be able to create a loan with an 0 interestRate", async function () {
+        // transfer bob to contract address
+        const [owner] = await ethers.getSigners();
+        await mockBobContract.connect(owner).transfer(lendingContract.address, ethers.utils.parseUnits("100", 18));
+        
+        await lendingContract.connect(owner).createLoan(ethers.utils.parseUnits("10", 18), 0);
+        const loan = await lendingContract.loans(owner.address);
+        expect(loan.amount).to.equal(ethers.utils.parseUnits("10", 18));
+        expect(loan.interestRate).to.equal(0);
+      });
+      it("Should be able to create a loan with a 10% interestRate", async function () {
+        // transfer bob to contract address
+        await mockBobContract.transfer(lendingContract.address, ethers.utils.parseUnits("100", 18));
 
-    // describe("createLoan()", function () {
-    //   beforeEach(async () => {
-    //     await depositTest()
-    //   });
-    //   it("Should be able to create a loan with an 0 interestRate", async function () {
-    //     // transfer bob to contract address
-    //     const [owner] = await ethers.getSigners();
-    //     await mockBobContract.connect(owner).transfer(lendingContract.address, ethers.utils.parseUnits("100", 18));
+        const [owner] = await ethers.getSigners()
+        await lendingContract.connect(owner).createLoan(ethers.utils.parseUnits("10", 18), 10);
+        const loan = await lendingContract.loans(owner.address);
+        expect(loan.amount).to.equal(ethers.utils.parseUnits("10", 18));
+        expect(loan.interestRate).to.equal(10);
+        expect(loan.active).to.equal(true);
+      });
+    });
 
-    //     await lendingContract.connect(owner).createLoan(ethers.utils.parseUnits("10", 18), 0, stringToBytes(myZkAddress));
-    //     const loan = await lendingContract.loans(owner.address);
-    //     expect(loan.amount).to.equal(ethers.utils.parseUnits("10", 18));
-    //     expect(loan.interestRate).to.equal(0);
-    //   });
-    //   it("Should be able to create a loan with a 10% interestRate", async function () {
-    //     // transfer bob to contract address
-    //     await mockBobContract.transfer(lendingContract.address, ethers.utils.parseUnits("100", 18));
-
-    //     const [owner] = await ethers.getSigners()
-    //     await lendingContract.connect(owner).createLoan(ethers.utils.parseUnits("10", 18), 10, stringToBytes(myZkAddress));
-    //     const loan = await lendingContract.loans(owner.address);
-    //     expect(loan.amount).to.equal(ethers.utils.parseUnits("10", 18));
-    //     expect(loan.interestRate).to.equal(10);
-    //     expect(loan.active).to.equal(true);
-    //   });
-    // });
-
-    // describe("repayLoan()", function () {
-    //   beforeEach(async () => {
-    //     await depositTest()
-    //   });
-    //   it("Should be able to repay your loan", async function () {
-    //     const [owner] = await ethers.getSigners()
-    //     const borrowAmount = ethers.utils.parseUnits("10", 18);
-    //     await lendingContract.connect(owner).createLoan(borrowAmount, 10);
-    //     await lendingContract.connect(owner).repayLoan();
-    //     const loan = await lendingContract.loans(owner.address);
-    //     expect(loan.active).to.equal(false);
-    //   });
-    // });
+    describe("repayLoan()", function () {
+      beforeEach(async () => {
+        await depositTest()
+      });
+      it("Should be able to repay your loan", async function () {
+        const [owner] = await ethers.getSigners()
+        const borrowAmount = ethers.utils.parseUnits("10", 18);
+        await lendingContract.connect(owner).createLoan(borrowAmount, 10);
+        await lendingContract.connect(owner).repayLoan();
+        const loan = await lendingContract.loans(owner.address);
+        expect(loan.active).to.equal(false);
+      });
+    });
     describe("deposit()", function () {
       it("Should be able to deposit", async function () {
         await depositTest();
