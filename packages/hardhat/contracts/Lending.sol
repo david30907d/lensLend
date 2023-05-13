@@ -31,7 +31,7 @@ contract Lending {
         bobDirectDepositContract = IZkBobDirectDeposits(_zkBobDirectDepositAddress);
     }
 
-    function createLoan(uint256 _amount, uint256 _interestRate, bytes memory zkAddress) external {
+    function createLoan(uint256 _amount, uint256 _interestRate) external {
         require(
             loans[msg.sender].active == false,
             "You already have an active loan"
@@ -42,8 +42,12 @@ contract Lending {
         );
 
         Loan memory newLoan = Loan(msg.sender, _amount, _interestRate, true);
-        // // TODO(david): use direct deposit
-        bobDirectDepositContract.directDeposit(msg.sender, _amount, zkAddress);
+        // option A:
+        // Option A, through pool contract
+        // bobToken.approve(address(bobDirectDepositContract), _amount);
+        // uint256 depositId = bobDirectDepositContract.directDeposit(msg.sender, _amount, zkAddress);
+        // option B:
+        // bobToken.transferAndCall(address(bobDirectDepositContract), _amount, abi.encode(msg.sender, zkAddress));
         loans[msg.sender] = newLoan;
         emit LoanCreated(msg.sender, _amount, _interestRate);
     }
