@@ -8,13 +8,17 @@ contract Vault {
     address public recipient;
     address public admin;
 
-    constructor(){
-    }
-
-    function init(address _recipient,address _admin) external{
+    constructor(address _recipient,address _admin) {
         recipient = _recipient;
         admin = _admin;
     }
+
+
+
+//    function init(address _recipient,address _admin) external {
+//        recipient = _recipient;
+//        admin = _admin;
+//    }
 
     modifier onlyRecipient(){
         require(msg.sender == recipient, "invalid recipient");
@@ -42,5 +46,9 @@ contract Vault {
     function updateRecipient(address _newRecipient) external onlyAdmin returns (bool){
         recipient=_newRecipient;
         return true;
+    }
+
+    function getRecipient() public view returns (address){
+        return recipient;
     }
 }

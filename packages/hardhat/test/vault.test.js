@@ -38,7 +38,9 @@ describe("Vault", function () {
           vaultRegistryContract.address, recipient, salt
         )
         console.log(vaultAddr)
-        await expect(vaultRegistryContract.createVault(recipient, salt))
+        await expect(vaultRegistryContract.createVault(
+          recipient, salt,
+          {value:ethers.utils.parseEther("0.0006")}))
           .to.emit(vaultRegistryContract, 'VaultCreated')
           .withArgs(vaultAddr, recipient)
       });
@@ -63,29 +65,35 @@ describe("Vault", function () {
       coinContract = await CoinContract.deploy();
       await coinContract.deployed()
       const recipient = deployer.address
-      const salt = ethers.utils.formatBytes32String("dwedewdewdew");
+      const salt = ethers.utils.formatBytes32String("wiii");
       const vaultAddr = await getVaultAddress(
         registryContract.address, recipient, salt
       )
+      const res= await registryContract.createVault(
+        recipient, salt,
+        {value:ethers.utils.parseEther("0.0006")})
+      await res.wait()
       vaultContract=await ethers.getContractAt("Vault",vaultAddr)
+      await vaultContract.deployed()
     })
     describe("Withdraw Test", () => {
       it("Withdraw With Right Sender", async function () {
         const coinAddress = coinContract.address
         const withdrawAmount = "10000"
         await airdropCoin(coinAddress, vaultContract.address, withdrawAmount)
-        const res = await vaultContract.withdraw(coinAddress, withdrawAmount);
+        await checkBalance(coinAddress, vaultContract.address, withdrawAmount)
+        let res = await vaultContract.withdraw(coinAddress, withdrawAmount);
         await res.wait()
         await checkBalance(coinAddress, deployer.address, withdrawAmount)
       });
-      // it("Withdraw With Wrong Sender", async function () {
-      //   const coinAddress = coinContract.address
-      //   const vaultWithUser2 = vaultContract.connect(user2)
-      //   await expect(vaultWithUser2.withdraw(coinAddress, "10000"))
-      //     .to.revertedWith(
-      //       'invalid recipient'
-      //     )
-      // });
+      it("Withdraw With Wrong Sender", async function () {
+        const coinAddress = coinContract.address
+        const vaultWithUser2 = vaultContract.connect(user2)
+        await expect(vaultWithUser2.withdraw(coinAddress, "10000"))
+          .to.revertedWith(
+            'invalid recipient'
+          )
+      });
     })
 
   });
