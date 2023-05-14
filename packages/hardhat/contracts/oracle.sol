@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.10;
 
 contract AuthorizedMapping {
     address private owner;
     mapping(address => uint256) private authorizedMap;
 
-    constructor() {
-        owner = msg.sender;
-    }
+    constructor() {}
 
     function getValue(address _addr) public view returns (uint256) {
         return authorizedMap[_addr];
