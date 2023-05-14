@@ -39,21 +39,12 @@ contract Lending {
             loans[msg.sender].active == false,
             "You already have an active loan"
         );
-        // require(oracle.getValue(msg.sender) >= _amount, "_amount is greater than authorized amount");
-        require(
-            bobToken.transfer(msg.sender, _amount),
-            "Loan transfer failed"
-        );
-
+        require(oracle.getValue(msg.sender) >= _amount, "_amount is greater than authorized amount");
         Loan memory newLoan = Loan(msg.sender, _amount, _interestRate, true);
         // option A:
         // Option A, through pool contract
         IERC20(bobDirectDepositContract.token()).safeApprove(address(bobDirectDepositContract), _amount);
-        // bobToken.approve(address(bobDirectDepositContract), _amount);
         bobDirectDepositContract.directDeposit(msg.sender, _amount, zkAddress);
-        // uint256 depositId = bobDirectDepositContract.directDeposit(msg.sender, 1, zkAddress);
-        // option B:
-        // bobToken.transferAndCall(address(bobDirectDepositContract), _amount, abi.encode(msg.sender, zkAddress));
         loans[msg.sender] = newLoan;
         emit LoanCreated(msg.sender, _amount, _interestRate);
     }
