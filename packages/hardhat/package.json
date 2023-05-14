@@ -47,6 +47,7 @@
     "send": "hardhat send",
     "generate": "hardhat generate",
     "account": "hardhat account",
-    "verify": "hardhat verify"
+    "verify": "hardhat verify",
+    "demo": "hardhat run --network hardhat scripts/demo.js"
   }
 }
