@@ -11,6 +11,8 @@
 1. lender: `approve`
 2. lender: `deposit`
 3. borrower: `createLoan`
+4. borrower: `approve`
+5. borrower: `repayLoan`
 
 # 🏗 Scaffold-ETH
 
