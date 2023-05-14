@@ -112,10 +112,12 @@ module.exports = {
     },
     sepolia: {
       url: "https://rpc.sepolia.org",
+      // url: "https://eth-sepolia.g.alchemy.com/v2/Ejxd3o1JAwdP6X67VxVwAMW1zcVmTKn3",
       // "https://sepolia.infura.io/v3/INFURA_ID",
-      accounts: {
-        mnemonic: mnemonic(),
-      },
+      accounts: [`0x${PRIVATE_KEY}`]
+      // accounts: {
+      //   mnemonic: mnemonic(),
+      // },
     },
     zksyncalpha: {
       url: "https://zksync2-testnet.zksync.dev",
