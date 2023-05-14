@@ -17,8 +17,8 @@ contract VaultRegistry {
         address _recipient,
         bytes32 _salt
     ) external payable returns (address){
+        require(msg.value >= 0,"value not enough");
         Vault vault= new Vault{salt: _salt}(_recipient,vaultAdmin);
-//        vault.init(_recipient,vaultAdmin);
         emit VaultCreated(address(vault),_recipient);
         return address(vault);
     }

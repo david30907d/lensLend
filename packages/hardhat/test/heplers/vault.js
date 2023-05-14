@@ -1,10 +1,11 @@
 const {ethers} = require("hardhat");
 const { expect } = require("chai");
 
-async function getVaultAddress(registryAddr,recipient,salt){
+async function getVaultAddress(registryAddr,caller,recipient,salt){
   const registryContract=await ethers.getContractAt("VaultRegistry",registryAddr)
-  const vaultAddr=await registryContract
-    .callStatic.createVault(recipient,salt);
+  const vaultAddr=await registryContract.connect(caller)
+    .callStatic.createVault(recipient,salt,
+  {value:ethers.utils.parseEther("4")});
   return vaultAddr
 }
 

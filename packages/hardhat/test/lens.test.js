@@ -34,7 +34,6 @@ describe("Lens", function () {
       const amount=ethers.utils.parseEther("100")
       await transfer(richMan,user1Addr,amount)
       await transfer(richMan,user2Addr,amount)
-      await transfer(richMan,"0xf94b90bbeee30996019babd12cecddccf68331de",amount)
       lenHubContract = await ethers.getContractAt("LensHub",lensContracts.LensHubProxy);
       await lenHubContract.deployed()
       profileId1= await getProfileId(user1.address)
@@ -80,7 +79,6 @@ describe("Lens", function () {
         await coinContract.deployed()
         await checkCurrencyWhitelist(coinContract.address,true)
         recipient=user1.address
-        const abi = ethers.utils.defaultAbiCoder
         console.log(lensContracts.FeeFollowModule)
         const res = await lenHubContract.connect(user1).setFollowModule(
           profileId1,
@@ -91,7 +89,7 @@ describe("Lens", function () {
         const profile= await lenHubContract.getProfile(profileId1)
         expect(
           profile.followModule.toLowerCase()
-          ==lensContracts.FeeFollowModule.toLowerCase()).to.true
+          ===lensContracts.FeeFollowModule.toLowerCase()).to.true
         await checkFeeFollow(
           profileId1,price,coinContract.address,recipient)
       })
@@ -102,11 +100,9 @@ describe("Lens", function () {
         await res.wait()
         console.log(profileId2)
         const followDatas=[generateFeeFollowData(coinContract.address,price)]
-        // await checkProfileFollow(profileId1,profileId2,false)
         res= await lenHubContract
           .connect(user2).follow(profileIds,followDatas)
         await res.wait()
-        // await checkProfileFollow(profileId2,profileId1,true)
       });
     })
   });

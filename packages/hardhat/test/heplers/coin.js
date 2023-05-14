@@ -10,9 +10,10 @@ async function airdropCoin(coinAddress,to,amount){
 
 async function checkBalance(coinAddress,owner,amount){
   const coin = await ethers.getContractAt(
-    "MockCoin",coinAddress
+    "IERC20",coinAddress
   );
   const balance= await coin.balanceOf(owner)
+  console.log(balance.toString(),amount)
   expect(balance.eq(amount)).to.true
 }
 

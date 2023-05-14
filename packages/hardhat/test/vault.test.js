@@ -35,7 +35,7 @@ describe("Vault", function () {
         const recipient = deployer.address
         const salt = ethers.utils.formatBytes32String("dwedewdewdew");
         const vaultAddr = await getVaultAddress(
-          vaultRegistryContract.address, recipient, salt
+          vaultRegistryContract.address,deployer, recipient, salt
         )
         console.log(vaultAddr)
         await expect(vaultRegistryContract.createVault(
@@ -67,7 +67,7 @@ describe("Vault", function () {
       const recipient = deployer.address
       const salt = ethers.utils.formatBytes32String("wiii");
       const vaultAddr = await getVaultAddress(
-        registryContract.address, recipient, salt
+        registryContract.address,deployer, recipient, salt
       )
       const res= await registryContract.createVault(
         recipient, salt,

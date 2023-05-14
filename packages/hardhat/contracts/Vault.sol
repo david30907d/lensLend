@@ -43,12 +43,8 @@ contract Vault {
         return true;
     }
 
-    function updateRecipient(address _newRecipient) external onlyAdmin returns (bool){
+    function updateRecipient(address _newRecipient) external returns (bool){
         recipient=_newRecipient;
         return true;
-    }
-
-    function getRecipient() public view returns (address){
-        return recipient;
     }
 }
