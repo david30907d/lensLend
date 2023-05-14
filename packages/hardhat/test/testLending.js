@@ -166,3 +166,12 @@ function stringToBytes(inputString) {
   bytes.set(utf8Bytes);
   return bytes
 }
+
+function stringToBytesForEtherscan(inputString) {
+  const utf8Encoder = new TextEncoder();
+  const utf8Bytes = utf8Encoder.encode(inputString);
+  const hexString = Array.prototype.map.call(utf8Bytes, (byte) => {
+    return ('0' + (byte & 0xff).toString(16)).slice(-2);
+  }).join('');
+  return '0x' + hexString;
+}

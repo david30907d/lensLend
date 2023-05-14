@@ -3,8 +3,14 @@
 1. `npx hardhat run deploy/deploy_lending_and_oracle_to_sepolia.js --network sepolia`
 2. `npx hardhat verify 0xCa5735DF04F5cc56D34883545a51430217d7097E --network sepolia "0x2c74b18e2f84b78ac67428d0c7a9898515f0c46f" "0xE3Dd183ffa70BcFC442A0B9991E682cA8A442Ade" "0xA0C18fAd7e7951497Aef46c5559F84Dbad4b9E50"`
 
-* Lending(sepolia): <https://sepolia.etherscan.io/address/0x548ea94d8714d4c3d1e7549db7A3889f32AC4b02#code>
+* Lending(sepolia): <https://sepolia.etherscan.io/address/0x103dF13FD2e6095Fc78acA926547269c5258B66D#code>
 * Oracle(sepolia): <https://sepolia.etherscan.io/address/0x5fEece051F64c3e371633C18edCf6c4d3C001E86>
+
+## Demo
+
+1. lender: `approve`
+2. lender: `deposit`
+3. borrower: `createLoan`
 
 # 🏗 Scaffold-ETH
 
